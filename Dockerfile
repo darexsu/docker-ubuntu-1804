@@ -24,6 +24,7 @@ RUN apt-get update \
        python3-yaml \
        software-properties-common \
        rsyslog systemd systemd-cron sudo iproute2 \
+       wget \
     && apt-get clean \
     && rm -Rf /var/lib/apt/lists/* \
     && rm -Rf /usr/share/doc && rm -Rf /usr/share/man
