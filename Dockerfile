@@ -8,7 +8,7 @@ ARG LANG="en_US.UTF-8"
 ARG LC_ALL="en_US.UTF-8"
 
 ENV pip_packages "ansible"
-ENV ANSIBLE_USER=ansible SUDO_GROUP=wheel DEPLOY_GROUP=deployer
+ENV ANSIBLE_USER=ansible SUDO_GROUP=sudo DEPLOY_GROUP=deployer
 # Install dependencies.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -51,7 +51,6 @@ RUN rm -f /lib/systemd/system/systemd*udev* \
 RUN set -xe \
   && groupadd -r ${ANSIBLE_USER} \
   && groupadd -r ${DEPLOY_GROUP} \
-  && groupadd -r ${SUDO_GROUP} \
   && useradd -m -g ${ANSIBLE_USER} ${ANSIBLE_USER} \
   && usermod -aG ${SUDO_GROUP} ${ANSIBLE_USER} \
   && usermod -aG ${DEPLOY_GROUP} ${ANSIBLE_USER} \
