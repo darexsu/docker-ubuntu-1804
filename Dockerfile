@@ -8,7 +8,7 @@ ARG LANG="en_US.UTF-8"
 ARG LC_ALL="en_US.UTF-8"
 
 ENV pip_packages "ansible"
-
+ENV ANSIBLE_USER=ansible SUDO_GROUP=wheel DEPLOY_GROUP=deployer
 # Install dependencies.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -47,6 +47,15 @@ RUN echo "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
 # multiple containers with Molecule (https://github.com/ansible/molecule/issues/1104)
 RUN rm -f /lib/systemd/system/systemd*udev* \
   && rm -f /lib/systemd/system/getty.target
+
+RUN set -xe \
+  && groupadd -r ${ANSIBLE_USER} \
+  && groupadd -r ${DEPLOY_GROUP} \
+  && groupadd -r ${SUDO_GROUP} \
+  && useradd -m -g ${ANSIBLE_USER} ${ANSIBLE_USER} \
+  && usermod -aG ${SUDO_GROUP} ${ANSIBLE_USER} \
+  && usermod -aG ${DEPLOY_GROUP} ${ANSIBLE_USER} \
+  && sed -i "/^%${SUDO_GROUP}/s/ALL\$/NOPASSWD:ALL/g" /etc/sudoers
 
 VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
 CMD ["/lib/systemd/systemd"]
