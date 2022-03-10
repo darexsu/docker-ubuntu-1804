@@ -16,12 +16,19 @@ platforms:
   - name: instance
     image: "darexsu/molecule-ubuntu-1804:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
+    tmpfs:
+      - /run
+      - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
+    privileged: false
     pre_build_image: true
 provisioner:
   name: ansible
+  inventory:
+    host_vars:
+      instance:
+        ansible_user: ansible
   playbooks:
-    converge: converge.yml
+    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
 ```
